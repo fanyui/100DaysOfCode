@@ -1,10 +1,10 @@
-const {ApolloServer} = require('apollo-server');
+const {ApolloServer, PubSub} = require('apollo-server');
 const fs = require('fs');
 const path = require('path')
 const {PrismaClient} = require('@prisma/client')
-
+const  {post, updateLink, deleteLink } =  require('./resolvers/Mutation')
 const prisma = new PrismaClient()
-
+const pubsub = new PubSub()
 // 1
 const resolvers = {
     Query: {
@@ -23,27 +23,9 @@ const resolvers = {
     },
     Mutation: {
         // 2
-        post: (parent, args, context) => {
-            const newLink = context.prisma.link.create({
-                data: {
-                    url: args.url,
-                    description: args.description
-                }
-            })
-            return newLink;
-        },
-        updateLink: (parent, args, context) => {
-           const link = context.prisma.link.update({where:{
-                id: args.id
-              },data: {description: args.description, url: args.url}
-            })
-            return link
-        },
-        deleteLink: (parent, args, context) => {
-            let link = context.prisma.link.delete({where:{id: args.id}})
-            return link;
-
-        }
+        post,
+        updateLink,
+        deleteLink
     }
 }
 
@@ -54,7 +36,16 @@ const server = new ApolloServer({
         'utf8'
     ),
     resolvers,
-    context:{
+    context:({req}) => {
+        return {
+            ...req,
+            prisma,
+            pubsub,
+            userId: 
+                req && req.headers.authorization
+                    ? getUserId(req)
+                    : null
+        }
         prisma
     }
 })
