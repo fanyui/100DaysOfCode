@@ -2,31 +2,22 @@ const {ApolloServer, PubSub} = require('apollo-server');
 const fs = require('fs');
 const path = require('path')
 const {PrismaClient} = require('@prisma/client')
-const  {post, updateLink, deleteLink } =  require('./resolvers/Mutation')
+const  Mutation =  require('./resolvers/Mutation')
+const Subscription = require('./resolvers/Subscription')
+const User = require('./resolvers/User')
+const Link = require('./resolvers/Link')
+const Query = require('./resolvers/Query')
+
+const {getUserId} = require('./utils')
 const prisma = new PrismaClient()
 const pubsub = new PubSub()
 // 1
 const resolvers = {
-    Query: {
-        info: () => 'This is API for hackernews Clone',
-        feed: (parent, args, context) => {
-            return context.prisma.link.findMany()
-        },
-        link: (parent, args, context) =>{
-            const link = context.prisma.link.findFirst({
-                where:{
-                  id: args.id
-                }
-              })
-           return link
-        },
-    },
-    Mutation: {
-        // 2
-        post,
-        updateLink,
-        deleteLink
-    }
+    Query,
+    Mutation, 
+    Subscription,
+    User, 
+    Link
 }
 
 // 3 
@@ -46,7 +37,6 @@ const server = new ApolloServer({
                     ? getUserId(req)
                     : null
         }
-        prisma
     }
 })
 
