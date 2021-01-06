@@ -1,6 +1,7 @@
 const { buildSchemaFromTypeDefinitions } = require("apollo-server");
 const bcrypt= require('bcryptjs')
 const jwt= require('jsonwebtoken')
+const {APP_SECRET} = require('../utils')
      // 2
      async function post (parent, args, context, info){
          const {userId}  = context
@@ -35,7 +36,7 @@ const jwt= require('jsonwebtoken')
         }
     }
 async function login(parent, args, context, info){
-    const user = await context.prisma.user.findUnique({where: {email: args.email}})
+    const user = await context.prisma.user.findFirst({where: {email: args.email}})
     if(!user){
         throw new Error('No such user found')
 
