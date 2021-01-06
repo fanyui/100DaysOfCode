@@ -12,6 +12,7 @@ const {APP_SECRET} = require('../utils')
                 postedBy: {connect: {id: userId}},
             }
         })
+          context.pubsub.publish("NEW_LINK", newLink)
         return newLink;
     }
     async function updateLink(parent, args, context){
