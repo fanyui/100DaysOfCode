@@ -1,9 +1,8 @@
-const { buildSchemaFromTypeDefinitions } = require("apollo-server");
 const bcrypt= require('bcryptjs')
 const jwt= require('jsonwebtoken')
 const {APP_SECRET, getUserId} = require('../utils')
      // 2
-     async function post (parent, args, context, info){
+     async function post(parent, args, context, info){
          const {userId}  = context
         const newLink = context.prisma.link.create({
             data: {
@@ -57,7 +56,7 @@ async function vote(parent, args, context, info){
     const userId = getUserId(context)
     const vote = await context.prisma.vote.findUnique({
         where: {
-            linkId_userID: {
+            linkId_userId: {
                 linkId: Number(args.linkId),
                 userId: userId
             }
@@ -66,13 +65,14 @@ async function vote(parent, args, context, info){
     if(Boolean(vote)){
         throw new Error(`Already voted for link ${args.linkId}`)
     }
-    const newVote = context.prisma.vote.create({
+    const newVote =  context.prisma.vote.create({
         data:{
             user: {connect: {id: userId}},
             link: {connect: {id: Number(args.linkId)}},
 
         }
     })
+    console.log(" new vote is: ", newVote)
     context.pubsub.publish("NEW_VOTE", newVote)
     return newVote
 
