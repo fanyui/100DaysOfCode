@@ -72,7 +72,6 @@ async function vote(parent, args, context, info){
 
         }
     })
-    console.log(" new vote is: ", newVote)
     context.pubsub.publish("NEW_VOTE", newVote)
     return newVote
 

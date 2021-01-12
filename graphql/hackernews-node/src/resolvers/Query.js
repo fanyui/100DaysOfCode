@@ -1,5 +1,15 @@
 function feed(parent, args, context) {
-    return context.prisma.link.findMany()
+  const where = args.filter?
+  {
+    OR: [
+      {description: {contains: args.filter}},
+      {url: {contains: args.filter}},
+    ],
+  }:
+  {}
+  const links = await context.prisma.link.findMany({where})
+  return links
+    // return context.prisma.link.findMany()
 }
 function info(){return 'This is API for hackernews Clone'}
 
