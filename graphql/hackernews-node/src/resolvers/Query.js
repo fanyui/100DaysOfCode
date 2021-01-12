@@ -13,7 +13,11 @@ async function feed(parent, args, context) {
     take: args.take,
     orderBy: args.orderBy
   })
-  return links
+  const count = await context.prisma.link.count({where})
+  return {
+    links,
+    count
+  }
     // return context.prisma.link.findMany()
 }
 function info(){return 'This is API for hackernews Clone'}
